@@ -1,8 +1,19 @@
-FROM ubuntu/squid
+#
+# Dockerfile for tinyproxy
+#
 
-COPY squid.conf /etc/squid/squid.conf
-COPY passwords /etc/squid/passwords
+FROM alpine:3
+MAINTAINER EasyPi Software Foundation
 
-EXPOSE 3128
+RUN set -xe \
+    && apk add --no-cache tinyproxy \
+    && sed -i -e '/^Allow /s/^/#/' \
+              -e '/^ConnectPort /s/^/#/' \
+              -e '/^#DisableViaHeader /s/^#//' \
+              /etc/tinyproxy/tinyproxy.conf
 
-CMD ["squid", "-N"]
+COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
+
+EXPOSE 8888
+
+CMD ["tinyproxy", "-d"]
